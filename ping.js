@@ -20,15 +20,7 @@ createCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
-    // Kommentar entfernen, um die Farbpalette anzuzeigen
-/*   for (let i=0; i<colorPalette.length; i++){
-    push()
-    translate(300,300)
-    fill(colorPalette[i].rot,colorPalette[i].grun,colorPalette[i].blau,100)
-    rect(100*i/2,100*i/2,100,100)
-    pop()
-  } */
-  
+
   // Background
   background(250,238,232);
   fill(0);
@@ -37,6 +29,15 @@ function draw() {
   textSize(24);
   text("Score: " + score, 10, 25);
   strokeWeight(5)
+
+   // Kommentar entfernen, um die Farbpalette anzuzeigen
+  for (let i=0; i<colorPalette.length; i++){
+    push()
+    translate(300,300)
+    fill(colorPalette[i].rot,colorPalette[i].grun,colorPalette[i].blau,150)
+    rect(100*i/2,100*i/2,200,200)
+    pop()
+  }
 
   //Paddles
   rect(mouseX,windowHeight-15, 90, 15);
