@@ -9,7 +9,7 @@ let gelb  = {rot:245,grun:205,blau:76};
 colorPalette = [rot, rose, blau, turkis, lila, orange, gelb];
 
 var xBall = Math.floor(Math.random() * 300) + 50;
-var yBall;
+var yBall = 50
 var xSpeed = (2, 7);
 var ySpeed = (-7, -2);
 var score = 0
@@ -45,16 +45,23 @@ function draw() {
 
   
   //Ball
-  yBall = height/2
+  yBall += ySpeed;
   xBall += xSpeed;
 
   ellipse(xBall, yBall, d);
 
-  if(xBall>windowWidth-(d/2) || xBall<d/2){
-    xSpeed *= -1;
-  } 
+  // if(xBall>windowWidth-(d/2) || xBall<d/2){
+  //   xSpeed *= -1;
+  // } 
 
   // TO DO 2: Schaffst du es, dass sich der Ball frei bewegt?
+  if(xBall>windowWidth-10 || xBall < 10){
+    xSpeed *= -1;
+  } 
+  if(yBall>windowHeight-10 || yBall < 10){
+    ySpeed *= -1;
+  } 
+
   // TO DO 4: Lass den Ball vom Balken aprallen, falls sie sich berühren
   // TO DO: einen Punktzähler erstellen
   // TO DO: Einen Startbildschirm programmieren
