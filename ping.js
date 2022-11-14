@@ -49,6 +49,7 @@ function draw() {
   bounce();
   paddleHit();
   points();
+  reset();
 
 // Scoreboard
   textSize(24);
@@ -92,7 +93,8 @@ function bounce() {
   function points() {
 
     if (yBall == windowHeight) {
-      score1 ++}
+      score1 ++
+    }
   
     if (yBall == 0){
       score2 ++}
@@ -102,11 +104,19 @@ function bounce() {
 function paddleHit() {
   if ((xBall > mouseX-paddleLength/2 && xBall < mouseX+paddleLength/2) && (yBall == windowHeight-paddleDepth-d/2)) {
     ySpeed *= -1;
+    xSpeed *= -1;
   }
 
   if ((xBall > mouseX-paddleLength/2 && xBall < mouseX+paddleLength/2) && (yBall == paddleDepth+d/2)) {
     ySpeed *= -1;
+    xSpeed *= -1;
   }
+}
+
+function reset() {
+      if (yBall == windowHeight + d/2 || yBall == -d/2) {
+      yBall = windowHeight/2;
+    }
 }
 
 class Paddle {
@@ -120,7 +130,7 @@ class Paddle {
 
   show() {
     this.playingSurface;
-    //rect(this.posX,this.posY, this.length, this.depth);
+    rect(this.posX,this.posY, this.length, this.depth);
   }
 }
 
