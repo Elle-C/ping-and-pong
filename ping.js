@@ -8,53 +8,102 @@ let orange  = {rot:230,grun:119,blau:64};
 let gelb  = {rot:245,grun:205,blau:76};
 colorPalette = [rot, rose, blau, turkis, lila, orange, gelb];
 
+let circle;
+let circles = [];
+let circleColor = 0;
+let lines = []
+
 let xBall;
 let yBall;
 let xSpeed = (4,7); 
 let ySpeed = (-7,-4); 
+
+let gameState = 0;
+
 let score1 = 0;
 let score2 = 0;
 
-//um die Kontrolle über die Elementgrößen zu haben, habe ich sie hier angegeben 
 let ball;
 let d = 50;
-let paddleLength = 190;
-let paddleDepth = 15;
 let color=0;
+
+let paddleLength = 250;
+let paddleDepth = 20;
 
 function setup() {
 createCanvas(windowWidth, windowHeight);
-//damit der Ball in der Mitte beginnt, habe ich sie hier mit windowWidth + Height angegeben
 xBall = Math.floor(Math.random() * windowWidth/2);
 yBall = windowHeight/2;
 }
 
 function draw() {
-// Background
-  background(250,238,232);
-  fill(0);
-  strokeWeight(5);
+background(250,238,232);
+strokeWeight(5);
+textSize(24);
+textAlign(CENTER);
 
-// Kommentar entfernen, um die Farbpalette anzuzeigen
-  for (let i=0; i<colorPalette.length; i++){
-  push();
-  translate(300,300);
-  fill(colorPalette[i].rot,colorPalette[i].grun,colorPalette[i].blau,150);
-  rect(100*i/2,100*i/2,200,200);
-  pop();
+push();
+noStroke();
+push();
+fill(turkis.rot, turkis.grun, turkis.blau, 100);
+beginShape(QUADS);
+vertex(windowWidth/6, 0);
+vertex(windowWidth/3, 0);
+vertex(windowWidth, 7*windowHeight/12);
+vertex(windowWidth, 11*windowHeight/12);
+endShape();
+pop();
+
+console.log(circles)
+
+push();
+fill(gelb.rot, gelb.grun, gelb.blau, 100);
+beginShape(QUADS);
+vertex(windowWidth, 0);
+vertex(11*windowWidth/12, 0);
+vertex(0, 3*windowHeight/4);
+vertex(0, windowHeight);
+vertex(windowWidth/12, windowHeight);
+endShape();
+pop();
+pop();
+
+if (gameState == 0) {startGame();
+} else if (gameState == 1) {playGame();
+} else if (gameState == 2) {finishGame();}
+
+if (score1 + score2 == 5 ){gameState = 2;}
+
+for (let line of lines)
+line.show();  
+for (let circle of circles)
+circle.show(); 
+}
+
+function startGame() {
+  text ("CLICK TO START", width/2, height/2);
+}
+
+function mousePressed() {
+  if(gameState == 0) {
+    gameState = 1;
   }
+}
 
-// Functions
+function playGame() {
+  // Background
+  fill(0);
+
+  // Functions
   move();
   bounce();
   paddleHit();
-  points();
   reset();
 
-// Scoreboard
-  textSize(24);
-  text("Player One: " + score1, 10, windowHeight/4);
-  text("Player Two: " + score2, 10, 3*windowHeight/4);
+  // Scoreboard
+  //textSize(24);
+  //text("Player One: " + score1, 10, windowHeight/4);
+  //text("Player Two: " + score2, 10, 3*windowHeight/4);
 
   //Paddles
   paddleOne = new Paddle (windowHeight-paddleDepth, 0);
@@ -65,6 +114,10 @@ function draw() {
   //Ball
   ball = new Ball()
   ball.show();
+}
+
+function finishGame() {
+  text ("GAME OVER", width/2, height/2);
 }
 
 function move() {
@@ -81,41 +134,33 @@ function bounce() {
       color=0;
     }
   } 
-  //Ich habe diese Zeile entfernt, damit der Ball über den oberen/unteren 
-  //Rand des Fensters hinausgeht, aber ich habe sie hier kommentiert gelassen, 
-  //da sie gut für die Fehlersuche ist
-  /* if(yBall>windowHeight-d/2 || yBall < d/2){
+ /*  if(yBall>windowHeight-d/2 || yBall < d/2){
     ySpeed *= -1;
   } */
 }
 
-  //einen Punktzähler erstellen
-  function points() {
-
-    if (yBall == windowHeight) {
-      score1 ++
-    }
-  
-    if (yBall == 0){
-      score2 ++}
-  }
-
   //Lass den Ball vom Balken aprallen, falls sie sich berühren
 function paddleHit() {
-  if ((xBall > mouseX-paddleLength/2 && xBall < mouseX+paddleLength/2) && (yBall == windowHeight-paddleDepth-d/2)) {
+  if ((xBall > mouseX-paddleLength/2 && xBall < mouseX+paddleLength/2) && (yBall > windowHeight-paddleDepth-d/2)) {
     ySpeed *= -1;
     xSpeed *= -1;
-  }
+    lines.push(new Line((random(windowWidth/4,3*windowWidth/4)),(random(windowHeight/4,3*windowHeight/4)),(random(windowWidth/4,3*windowWidth/4)),(random(windowHeight/4,3*windowHeight/4)))); }
 
-  if ((xBall > mouseX-paddleLength/2 && xBall < mouseX+paddleLength/2) && (yBall == paddleDepth+d/2)) {
+  if ((xBall > mouseX-paddleLength/2 && xBall < mouseX+paddleLength/2) && (yBall < paddleDepth+d/2)) {
     ySpeed *= -1;
     xSpeed *= -1;
-  }
+    circles.push(new Circle((random(windowWidth/4,3*windowWidth/4)),(random(windowHeight/4,3*windowHeight/4)),(random(100,400)) ));
+    circleColor++}
 }
 
 function reset() {
-      if (yBall == windowHeight + d/2 || yBall == -d/2) {
+      if (yBall < -d/2) {
       yBall = windowHeight/2;
+      score2++
+    }
+      if (yBall > windowHeight + d/2) {
+      yBall = windowHeight/2;
+      score1++
     }
 }
 
@@ -127,10 +172,9 @@ class Paddle {
     this.depth= paddleDepth;
     this.playingSurface = line(this.posX, yPaddle+(-this.depth*ySurface),this.posX+this.length, yPaddle+(-this.depth*ySurface));
   }
-
   show() {
     this.playingSurface;
-    rect(this.posX,this.posY, this.length, this.depth);
+    //rect(this.posX,this.posY, this.length, this.depth);
   }
 }
 
@@ -150,7 +194,38 @@ class Ball {
     pop();
   }
 }
-  // TO DO: Den Ball zurücksetzen 
-  // TO DO: Einen Startbildschirm programmieren
-  // TO DO: Programmieren Sie einen Endbildschirm
-  // TO DO: Stil das Spiel
+
+class Line {
+  constructor(x1, y1, x2, y2) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    this.weight = random(1,10);
+    this.rotate = random(-1,1);
+  }
+  show() {
+    push()
+    strokeWeight(this.weight);
+    rotate(this.rotate)
+    line(this.x1, this.y1, this.x2, this.y2)
+    pop()
+  }
+}
+
+class Circle {
+  constructor(x,y,r) {
+    this.x = x;
+    this.y = y;
+    this.radius = r;
+    this.color = circleColor;
+  }
+
+  show() {
+    push();
+    stroke(255)
+    fill(colorPalette[this.color].rot,colorPalette[this.color].grun,colorPalette[this.color].blau,150)
+    ellipse(this.x, this.y, this.radius);
+    pop();
+  }
+}
